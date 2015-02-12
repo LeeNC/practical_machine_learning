@@ -137,15 +137,17 @@ We will run the random forest algorithm to build the model to predict the way 6 
 
 ```{r, warning=FALSE}
 modFit <-randomForest(classe~.,data=training,proximity=TRUE,importance=TRUE)
+```
+```{r, echo=FALSE,warning=FALSE}
 modFit
 ```
-The model has a OOB estimate of error rate of 0.24% which is 99.76% accuracy. We will expect the testing and validating error rate to be close to 0.24% or have an accuracy around 99.7%.
+The model has a OOB estimate of error rate of 0.25% which is 99.75% accuracy. We will expect the testing and validating error rate to be close to 0.25% or have an accuracy around 99.7%.
 We will predict the result on the testing data and compare it against the actual testing result.
 ```{r, warning=FALSE}
 confusionMatrix(testing$classe, predict(modFit,testing))
 ```
-From the above, we have an accuracy of 99.75%. Let's do another prediction on the validating data and compare it against the actual validating result.
+From the above, we have an accuracy of 99.87%. Let's do another prediction on the validating data and compare it against the actual validating result.
 ```{r, warning=FALSE}
 confusionMatrix(validating$classe, predict(modFit,validating))
 ```
-From the above, we have an accuracy of 99.69%. The accuracy of training, testing and validating data are very similiar. Hence we will choose this model to predict the result of the given 20 test cases.
+From the above, we have an accuracy of 99.99%. The accuracy of training, testing and validating data are very similiar. Hence we will choose this model to predict the result of the given 20 test cases.
