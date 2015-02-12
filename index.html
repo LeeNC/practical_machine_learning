@@ -439,8 +439,7 @@ inTesting &lt;- createDataPartition(y=testValidate$classe, p=0.5, list=FALSE)
 testing &lt;- testValidate[inTesting,]
 validating &lt;- testValidate[-inTesting,]</code></pre>
 <p>We will run the random forest algorithm to build the model to predict the way 6 participants perform barbell lifts.</p>
-<pre class="r"><code>modFit &lt;-randomForest(classe~.,data=training,proximity=TRUE,importance=TRUE)
-modFit</code></pre>
+<pre class="r"><code>modFit &lt;-randomForest(classe~.,data=training,proximity=TRUE,importance=TRUE)</code></pre>
 <pre><code>## 
 ## Call:
 ##  randomForest(formula = classe ~ ., data = training, proximity = TRUE,      importance = TRUE) 
@@ -456,7 +455,7 @@ modFit</code></pre>
 ## C    0    7 2044    3    0 0.004868549
 ## D    0    0    9 1919    2 0.005699482
 ## E    0    0    0    4 2161 0.001847575</code></pre>
-<p>The model has a OOB estimate of error rate of 0.24% which is 99.76% accuracy. We will expect the testing and validating error rate to be close to 0.24% or have an accuracy around 99.7%. We will predict the result on the testing data and compare it against the actual testing result.</p>
+<p>The model has a OOB estimate of error rate of 0.25% which is 99.75% accuracy. We will expect the testing and validating error rate to be close to 0.25% or have an accuracy around 99.7%. We will predict the result on the testing data and compare it against the actual testing result.</p>
 <pre class="r"><code>confusionMatrix(testing$classe, predict(modFit,testing))</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
@@ -489,7 +488,7 @@ modFit</code></pre>
 ## Detection Rate         0.2845   0.1935   0.1744   0.1637   0.1828
 ## Detection Prevalence   0.2845   0.1935   0.1744   0.1639   0.1838
 ## Balanced Accuracy      1.0000   1.0000   0.9993   0.9968   0.9994</code></pre>
-<p>From the above, we have an accuracy of 99.75%. Let’s do another prediction on the validating data and compare it against the actual validating result.</p>
+<p>From the above, we have an accuracy of 99.87%. Let’s do another prediction on the validating data and compare it against the actual validating result.</p>
 <pre class="r"><code>confusionMatrix(validating$classe, predict(modFit,validating))</code></pre>
 <pre><code>## Confusion Matrix and Statistics
 ## 
@@ -522,7 +521,7 @@ modFit</code></pre>
 ## Detection Rate         0.2845   0.1935   0.1744   0.1634   0.1833
 ## Detection Prevalence   0.2845   0.1935   0.1744   0.1639   0.1838
 ## Balanced Accuracy      1.0000   1.0000   0.9993   0.9981   0.9990</code></pre>
-<p>From the above, we have an accuracy of 99.69%. The accuracy of training, testing and validating data are very similiar. Hence we will choose this model to predict the result of the given 20 test cases.</p>
+<p>From the above, we have an accuracy of 99.99%. The accuracy of training, testing and validating data are very similiar. Hence we will choose this model to predict the result of the given 20 test cases.</p>
 
 
 </div>
