@@ -1,0 +1,151 @@
+
+In this project, we aim to predict the way 6 participants perform barbell lifts. Using wearables such as Jawbone Up, Nike FuelBand, and Fitbit, we collect data on how they perform barbell lifts correctly and incorrectly in 5 different ways from the accelerometers on the belt, forearm, arm, and dumbell.
+
+
+We will load the data from pml-training.csv, converting empty string into "NA".
+```{r, warning=FALSE}
+library(randomForest)
+library(caret)
+set.seed(33833)
+d.train <- read.csv("pml-training.csv",header=TRUE,na.strings=c("","NA"))
+```
+
+
+```{r, echo=FALSE,warning=FALSE}
+summary(d.train)
+```
+From the summary above, it seems that there are a lot of "NA" in some of variables. We will remove those variables. We will also remove the first variable "X" which contains the row sequence number.
+
+
+```{r, echo=FALSE,warning=FALSE}
+new.d.train <- subset( d.train, select = -c(kurtosis_roll_belt,
+                                                    kurtosis_picth_belt ,
+                                                    kurtosis_yaw_belt ,
+                                                    skewness_roll_belt,
+                                                    skewness_roll_belt.1,
+                                                    skewness_yaw_belt ,
+                                                    max_roll_belt     ,
+                                                    max_picth_belt   ,
+                                                    max_yaw_belt   ,
+                                                    min_roll_belt,
+                                                    min_pitch_belt   ,
+                                                    min_yaw_belt   ,
+                                                    amplitude_roll_belt ,
+                                                    amplitude_pitch_belt,
+                                                    amplitude_yaw_belt ,
+                                                    var_total_accel_belt ,
+                                                    avg_roll_belt    ,
+                                                    stddev_roll_belt,
+                                                    var_roll_belt     ,
+                                                    avg_pitch_belt    ,
+                                                    stddev_pitch_belt ,
+                                                    var_pitch_belt  ,
+                                                    avg_yaw_belt      ,
+                                                    stddev_yaw_belt    ,
+                                                    var_yaw_belt        ,
+                                                    var_accel_arm,
+                                                    avg_roll_arm     ,
+                                                    stddev_roll_arm    ,
+                                                    var_roll_arm       ,
+                                                    avg_pitch_arm    ,
+                                                    stddev_pitch_arm ,
+                                                    var_pitch_arm       ,
+                                                    avg_yaw_arm       ,
+                                                    stddev_yaw_arm,
+                                                    var_yaw_arm,
+                                                    kurtosis_roll_arm ,
+                                                    kurtosis_picth_arm,
+                                                    kurtosis_yaw_arm ,
+                                                    skewness_roll_arm ,
+                                                    skewness_pitch_arm ,
+                                                    skewness_yaw_arm,
+                                                    max_roll_arm     ,
+                                                    max_picth_arm       ,
+                                                    max_yaw_arm     ,
+                                                    min_roll_arm   ,
+                                                    min_pitch_arm      ,
+                                                    min_yaw_arm    ,
+                                                    amplitude_roll_arm ,
+                                                    amplitude_pitch_arm,
+                                                    amplitude_yaw_arm,
+                                                    kurtosis_roll_dumbbell ,
+                                                    kurtosis_picth_dumbbell ,
+                                                    kurtosis_yaw_dumbbell,
+                                                    skewness_roll_dumbbell ,
+                                                    skewness_pitch_dumbbell ,
+                                                    skewness_yaw_dumbbell,
+                                                    max_roll_dumbbell ,
+                                                    max_picth_dumbbell ,
+                                                    max_yaw_dumbbell ,
+                                                    min_roll_dumbbell,
+                                                    min_pitch_dumbbell ,
+                                                    min_yaw_dumbbell ,
+                                                    amplitude_roll_dumbbell ,
+                                                    amplitude_pitch_dumbbell,
+                                                    amplitude_yaw_dumbbell,
+                                                    var_accel_dumbbell ,
+                                                    avg_roll_dumbbell,
+                                                    stddev_roll_dumbbell ,
+                                                    var_roll_dumbbell  ,
+                                                    avg_pitch_dumbbell ,
+                                                    stddev_pitch_dumbbell,
+                                                    var_pitch_dumbbell ,
+                                                    avg_yaw_dumbbell   ,
+                                                    stddev_yaw_dumbbell ,
+                                                    var_yaw_dumbbell  ,
+                                                    kurtosis_roll_forearm ,
+                                                    kurtosis_picth_forearm ,
+                                                    kurtosis_yaw_forearm,
+                                                    skewness_roll_forearm ,
+                                                    skewness_pitch_forearm ,
+                                                    skewness_yaw_forearm ,
+                                                    max_roll_forearm,
+                                                    max_picth_forearm ,
+                                                    max_yaw_forearm ,
+                                                    min_roll_forearm  ,
+                                                    min_pitch_forearm ,
+                                                    min_yaw_forearm,
+                                                    amplitude_roll_forearm ,
+                                                    amplitude_pitch_forearm ,
+                                                    amplitude_yaw_forearm,
+                                                    var_accel_forearm ,
+                                                    avg_roll_forearm   ,
+                                                    stddev_roll_forearm,
+                                                    var_roll_forearm   ,
+                                                    avg_pitch_forearm ,
+                                                    stddev_pitch_forearm ,
+                                                    var_pitch_forearm ,
+                                                    avg_yaw_forearm   ,
+                                                    stddev_yaw_forearm ,
+                                                    var_yaw_forearm
+                                                    ,cvtd_timestamp
+                                                    ,X
+        ) )
+```
+
+Next, we will split the data into training, testing and validating with the proportion, 60%, 20% and 20% respectively.
+```{r, warning=FALSE}
+inTraining <- createDataPartition(y=new.d.train$classe, p=0.6, list=FALSE)
+training <- new.d.train[inTraining,]
+testValidate <- new.d.train[-inTraining,]
+inTesting <- createDataPartition(y=testValidate$classe, p=0.5, list=FALSE)
+testing <- testValidate[inTesting,]
+validating <- testValidate[-inTesting,]
+```
+
+We will run the random forest algorithm to build the model to predict the way 6 participants perform barbell lifts.
+
+```{r, warning=FALSE}
+modFit <-randomForest(classe~.,data=training,proximity=TRUE,importance=TRUE)
+modFit
+```
+The model has a OOB estimate of error rate of 0.24% which is 99.76% accuracy. We will expect the testing and validating error rate to be close to 0.24% or have an accuracy around 99.7%.
+We will predict the result on the testing data and compare it against the actual testing result.
+```{r, warning=FALSE}
+confusionMatrix(testing$classe, predict(modFit,testing))
+```
+From the above, we have an accuracy of 99.75%. Let's do another prediction on the validating data and compare it against the actual validating result.
+```{r, warning=FALSE}
+confusionMatrix(validating$classe, predict(modFit,validating))
+```
+From the above, we have an accuracy of 99.69%. The accuracy of training, testing and validating data are very similiar. Hence we will choose this model to predict the result of the given 20 test cases.
